@@ -15,7 +15,6 @@
  * limitations under the License.
  * 
  */
-
 package net.nortlam.sickplace.common.entity;
 
 import java.beans.PropertyChangeListener;
