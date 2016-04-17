@@ -26,20 +26,20 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Pacient implements Serializable, PropertySupport {
-    
-    private PropertyChangeSupport pss;
+public class User implements Serializable, PropertySupport {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
     
-    public static final String PROPERTY_FIRST_NAME = "FIRST_NAME";
-    private String firstName;
+    public static final String PROPERTY_EMAIL = "email";
+    private String email;
     
-    public static final String PROPERTY_LAST_NAME = "LAST_NAME";
-    private String lastName;
+    public static final String PROPERTY_PASSWORD = "password";
+    private String password;
+    
+    private PropertyChangeSupport pss;
 
-    public Pacient() {
+    public User() {
         pss = new PropertyChangeSupport(this);
     }
 
@@ -53,32 +53,32 @@ public class Pacient implements Serializable, PropertySupport {
         pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setFirstName(String firstName) {
-        String oldValue = this.firstName;
-        this.firstName = firstName;
-        pss.firePropertyChange(PROPERTY_FIRST_NAME, oldValue, this.firstName);
+    public void setEmail(String email) {
+        String oldValue = this.email;
+        this.email = email;
+        pss.firePropertyChange(PROPERTY_EMAIL, oldValue, this.email);
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getPassword() {
+        return password;
     }
 
-    public void setLastName(String lastName) {
-        String oldValue = this.lastName;
-        this.lastName = lastName;
-        pss.firePropertyChange(PROPERTY_LAST_NAME, oldValue, this.lastName);
+    public void setPassword(String password) {
+        String oldValue = this.password;
+        this.password = password;
+        pss.firePropertyChange(PROPERTY_PASSWORD, oldValue, this.password);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = 5;
         hash = 89 * hash + (int) (this.ID ^ (this.ID >>> 32));
-        hash = 89 * hash + Objects.hashCode(this.firstName);
-        hash = 89 * hash + Objects.hashCode(this.lastName);
+        hash = 89 * hash + Objects.hashCode(this.email);
+        hash = 89 * hash + Objects.hashCode(this.password);
         return hash;
     }
 
@@ -93,28 +93,28 @@ public class Pacient implements Serializable, PropertySupport {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Pacient other = (Pacient) obj;
+        final User other = (User) obj;
         if (this.ID != other.ID) {
             return false;
         }
-        if (!Objects.equals(this.firstName, other.firstName)) {
+        if (!Objects.equals(this.email, other.email)) {
             return false;
         }
-        if (!Objects.equals(this.lastName, other.lastName)) {
+        if (!Objects.equals(this.password, other.password)) {
             return false;
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("<Patient ID=\"").append(ID).append("\">");
-        builder.append("<FirstName>").append(firstName != null ? firstName : "NULL")
-                .append("</FirstName>");
-        builder.append("<LastName>").append(lastName != null ? lastName : "NULL")
-                .append("</LastName>");
-        builder.append("</Patient>");
+        builder.append("<User ID=\"").append(ID).append("\">");
+        builder.append("<Email>").append(email != null ? email : "NULL")
+                .append("</Email>");
+        builder.append("<Password>").append(password != null ? password : "NULL")
+                .append("</Password>");
+        builder.append("</User>");
         
         return builder.toString();
     }
