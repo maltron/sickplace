@@ -20,57 +20,43 @@ package net.nortlam.sickplace.common.entity;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Collection;
 import net.nortlam.sickplace.common.PropertySupport;
 
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Subscription implements Serializable, PropertySupport{
+public class Office implements Serializable, PropertySupport {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
     
-    public static final String PROPERTY_START = "start";
-    private Date start;
-    
-    public static final String PROPERTY_END = "end";
-    private Date end;
+    public static final String PROPERTY_PATIENTS = "patients";
+    private Collection<Patient> patients;
     
     private PropertyChangeSupport pss;
 
-    public Subscription() {
-        pss = new PropertyChangeSupport(this);
+    public Office() {
     }
-
-    public long getID() {
-        return ID;
-    }
-
+    
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
         pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
-
-    public Date getStart() {
-        return start;
+    
+    public long getID() {
+        return ID;
     }
 
-    public void setStart(Date start) {
-        Date oldValue = this.start;
-        this.start = start;
-        pss.firePropertyChange(PROPERTY_START, oldValue, this.start);
+    public Collection<Patient> getPatients() {
+        return patients;
     }
 
-    public Date getEnd() {
-        return end;
-    }
-
-    public void setEnd(Date end) {
-        Date oldValue = this.end;
-        this.end = end;
-        pss.firePropertyChange(PROPERTY_END, oldValue, this.end);
+    public void setPatients(Collection<Patient> patients) {
+        Collection<Patient> oldValue = this.patients;
+        this.patients = patients;
+        pss.firePropertyChange(PROPERTY_PATIENTS, oldValue, this.patients);
     }
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
@@ -84,4 +70,6 @@ public class Subscription implements Serializable, PropertySupport{
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         pss.removePropertyChangeListener(listener);
     }
+    
+
 }

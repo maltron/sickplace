@@ -26,7 +26,7 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Pacient implements Serializable, PropertySupport {
+public class Patient implements Serializable, PropertySupport {
     
     private PropertyChangeSupport pss;
     
@@ -38,8 +38,11 @@ public class Pacient implements Serializable, PropertySupport {
     
     public static final String PROPERTY_LAST_NAME = "LAST_NAME";
     private String lastName;
+    
+    public static final String PROPERTY_OFFICE = "OFFICE";
+    private Office office;
 
-    public Pacient() {
+    public Patient() {
         pss = new PropertyChangeSupport(this);
     }
 
@@ -73,6 +76,16 @@ public class Pacient implements Serializable, PropertySupport {
         pss.firePropertyChange(PROPERTY_LAST_NAME, oldValue, this.lastName);
     }
 
+    public Office getOffice() {
+        return office;
+    }
+
+    public void setOffice(Office office) {
+        Office oldValue = this.office;
+        this.office = office;
+        pss.firePropertyChange(PROPERTY_OFFICE, oldValue, this.office);
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -93,7 +106,7 @@ public class Pacient implements Serializable, PropertySupport {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Pacient other = (Pacient) obj;
+        final Patient other = (Patient) obj;
         if (this.ID != other.ID) {
             return false;
         }
