@@ -21,12 +21,15 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Objects;
+import javax.json.Json;
+import javax.json.JsonObject;
+import net.nortlam.sickplace.common.JSON;
 import net.nortlam.sickplace.common.PropertySupport;
 
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Patient implements Serializable, PropertySupport {
+public class Patient implements Serializable, PropertySupport, JSON {
     
     private PropertyChangeSupport pss;
     
@@ -130,6 +133,18 @@ public class Patient implements Serializable, PropertySupport {
         builder.append("</Patient>");
         
         return builder.toString();
+    }
+    
+    // JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
+    //   JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
+    
+    @Override
+    public JsonObject toJSON() {
+        return Json.createObjectBuilder()
+           .add(PROPERTY_ID, getID())
+           .add(PROPERTY_FIRST_NAME, getFirstName())
+           .add(PROPERTY_LAST_NAME, getLastName())
+        .build();
     }
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 

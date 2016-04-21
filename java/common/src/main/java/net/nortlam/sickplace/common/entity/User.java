@@ -21,12 +21,15 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Objects;
+import javax.json.Json;
+import javax.json.JsonObject;
+import net.nortlam.sickplace.common.JSON;
 import net.nortlam.sickplace.common.PropertySupport;
 
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class User implements Serializable, PropertySupport {
+public class User implements Serializable, PropertySupport, JSON {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
@@ -119,6 +122,18 @@ public class User implements Serializable, PropertySupport {
         return builder.toString();
     }
     
+    // JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
+    //   JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
+    
+    @Override
+    public JsonObject toJSON() {
+        return Json.createObjectBuilder()
+           .add(PROPERTY_ID, getID())
+           .add(PROPERTY_EMAIL, getEmail())
+           .add(PROPERTY_PASSWORD, getPassword())
+        .build();
+    }
+
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     @Override
