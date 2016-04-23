@@ -17,7 +17,6 @@
  */
 package net.nortlam.sickplace.common.entity;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Objects;
@@ -29,7 +28,7 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class User implements Serializable, PropertySupport, JSON {
+public class User extends PropertySupport implements Serializable, JSON {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
@@ -43,7 +42,6 @@ public class User implements Serializable, PropertySupport, JSON {
     private PropertyChangeSupport pss;
 
     public User() {
-        pss = new PropertyChangeSupport(this);
     }
 
     public long getID() {
@@ -53,7 +51,7 @@ public class User implements Serializable, PropertySupport, JSON {
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
-        pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
 
     public String getEmail() {
@@ -63,7 +61,8 @@ public class User implements Serializable, PropertySupport, JSON {
     public void setEmail(String email) {
         String oldValue = this.email;
         this.email = email;
-        pss.firePropertyChange(PROPERTY_EMAIL, oldValue, this.email);
+        getPropertyChangeSupport()
+                .firePropertyChange(PROPERTY_EMAIL, oldValue, this.email);
     }
 
     public String getPassword() {
@@ -73,7 +72,8 @@ public class User implements Serializable, PropertySupport, JSON {
     public void setPassword(String password) {
         String oldValue = this.password;
         this.password = password;
-        pss.firePropertyChange(PROPERTY_PASSWORD, oldValue, this.password);
+        getPropertyChangeSupport()
+                .firePropertyChange(PROPERTY_PASSWORD, oldValue, this.password);
     }
 
     @Override
@@ -136,13 +136,11 @@ public class User implements Serializable, PropertySupport, JSON {
 
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pss.addPropertyChangeListener(listener);
-    }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pss.removePropertyChangeListener(listener);
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        if(pss == null) pss = new PropertyChangeSupport(this);
+        
+        return pss;
     }
 }

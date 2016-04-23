@@ -17,19 +17,17 @@
  */
 package net.nortlam.sickplace.common.entity;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import net.nortlam.sickplace.common.JSON;
 import net.nortlam.sickplace.common.PropertySupport;
 
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Plan implements Serializable, PropertySupport, JSON {
+public class Plan extends PropertySupport implements Serializable, JSON {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
@@ -37,7 +35,6 @@ public class Plan implements Serializable, PropertySupport, JSON {
     private PropertyChangeSupport pss;
     
     public Plan() {
-        pss = new PropertyChangeSupport(this);
     }
 
     public long getID() {
@@ -47,7 +44,7 @@ public class Plan implements Serializable, PropertySupport, JSON {
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
-        pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
     
     // JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
@@ -62,13 +59,11 @@ public class Plan implements Serializable, PropertySupport, JSON {
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pss.addPropertyChangeListener(listener);
-    }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pss.removePropertyChangeListener(listener);
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        if(pss == null) pss = new PropertyChangeSupport(this);
+        
+        return pss;
     }
 }

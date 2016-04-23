@@ -17,7 +17,6 @@
  */
 package net.nortlam.sickplace.common.entity;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Date;
@@ -29,7 +28,7 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Subscription implements Serializable, PropertySupport, JSON{
+public class Subscription extends PropertySupport implements Serializable, JSON{
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
@@ -43,7 +42,6 @@ public class Subscription implements Serializable, PropertySupport, JSON{
     private PropertyChangeSupport pss;
 
     public Subscription() {
-        pss = new PropertyChangeSupport(this);
     }
 
     public long getID() {
@@ -53,7 +51,7 @@ public class Subscription implements Serializable, PropertySupport, JSON{
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
-        pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
 
     public Date getStart() {
@@ -63,7 +61,7 @@ public class Subscription implements Serializable, PropertySupport, JSON{
     public void setStart(Date start) {
         Date oldValue = this.start;
         this.start = start;
-        pss.firePropertyChange(PROPERTY_START, oldValue, this.start);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_START, oldValue, this.start);
     }
 
     public Date getEnd() {
@@ -73,7 +71,7 @@ public class Subscription implements Serializable, PropertySupport, JSON{
     public void setEnd(Date end) {
         Date oldValue = this.end;
         this.end = end;
-        pss.firePropertyChange(PROPERTY_END, oldValue, this.end);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_END, oldValue, this.end);
     }
     
     // JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON JSON 
@@ -89,13 +87,11 @@ public class Subscription implements Serializable, PropertySupport, JSON{
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pss.addPropertyChangeListener(listener);
-    }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pss.removePropertyChangeListener(listener);
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        if(pss == null) pss = new PropertyChangeSupport(this);
+        
+        return pss;
     }
 }

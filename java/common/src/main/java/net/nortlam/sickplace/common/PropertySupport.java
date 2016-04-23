@@ -18,12 +18,21 @@
 package net.nortlam.sickplace.common;
 
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public interface PropertySupport {
-    public void addPropertyChangeListener(PropertyChangeListener listener);
-    public void removePropertyChangeListener(PropertyChangeListener listener);
+public abstract class PropertySupport {
+    
+    public abstract PropertyChangeSupport getPropertyChangeSupport();
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().addPropertyChangeListener(listener);
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        getPropertyChangeSupport().removePropertyChangeListener(listener);
+    }
 
 }

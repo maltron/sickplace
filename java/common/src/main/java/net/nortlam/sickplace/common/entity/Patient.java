@@ -17,7 +17,6 @@
  */
 package net.nortlam.sickplace.common.entity;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Objects;
@@ -29,7 +28,7 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Patient implements Serializable, PropertySupport, JSON {
+public class Patient extends PropertySupport implements Serializable, JSON {
     
     private PropertyChangeSupport pss;
     
@@ -46,7 +45,6 @@ public class Patient implements Serializable, PropertySupport, JSON {
     private Office office;
 
     public Patient() {
-        pss = new PropertyChangeSupport(this);
     }
 
     public long getID() {
@@ -56,7 +54,7 @@ public class Patient implements Serializable, PropertySupport, JSON {
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
-        pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
 
     public String getFirstName() {
@@ -66,7 +64,7 @@ public class Patient implements Serializable, PropertySupport, JSON {
     public void setFirstName(String firstName) {
         String oldValue = this.firstName;
         this.firstName = firstName;
-        pss.firePropertyChange(PROPERTY_FIRST_NAME, oldValue, this.firstName);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_FIRST_NAME, oldValue, this.firstName);
     }
 
     public String getLastName() {
@@ -76,7 +74,7 @@ public class Patient implements Serializable, PropertySupport, JSON {
     public void setLastName(String lastName) {
         String oldValue = this.lastName;
         this.lastName = lastName;
-        pss.firePropertyChange(PROPERTY_LAST_NAME, oldValue, this.lastName);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_LAST_NAME, oldValue, this.lastName);
     }
 
     public Office getOffice() {
@@ -86,7 +84,7 @@ public class Patient implements Serializable, PropertySupport, JSON {
     public void setOffice(Office office) {
         Office oldValue = this.office;
         this.office = office;
-        pss.firePropertyChange(PROPERTY_OFFICE, oldValue, this.office);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_OFFICE, oldValue, this.office);
     }
 
     @Override
@@ -149,13 +147,11 @@ public class Patient implements Serializable, PropertySupport, JSON {
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pss.addPropertyChangeListener(listener);
-    }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pss.removePropertyChangeListener(listener);
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        if(pss == null) pss = new PropertyChangeSupport(this);
+        
+        return pss;
     }
 }

@@ -17,7 +17,6 @@
  */
 package net.nortlam.sickplace.common.entity;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Collection;
@@ -26,7 +25,7 @@ import net.nortlam.sickplace.common.PropertySupport;
 /**
  *
  * @author Mauricio "Maltron" Leal <maltron@gmail.com> */
-public class Office implements Serializable, PropertySupport {
+public class Office extends PropertySupport implements Serializable {
     
     public static final String PROPERTY_ID = "ID";
     private long ID;
@@ -42,7 +41,7 @@ public class Office implements Serializable, PropertySupport {
     public void setID(long ID) {
         long oldValue = this.ID;
         this.ID = ID;
-        pss.firePropertyChange(PROPERTY_ID, oldValue, this.ID);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_ID, oldValue, this.ID);
     }
     
     public long getID() {
@@ -56,20 +55,16 @@ public class Office implements Serializable, PropertySupport {
     public void setPatients(Collection<Patient> patients) {
         Collection<Patient> oldValue = this.patients;
         this.patients = patients;
-        pss.firePropertyChange(PROPERTY_PATIENTS, oldValue, this.patients);
+        getPropertyChangeSupport().firePropertyChange(PROPERTY_PATIENTS, oldValue, this.patients);
     }
     
     // PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
     //  PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER PROPERTY CHANGE LISTENER 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pss.addPropertyChangeListener(listener);
-    }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pss.removePropertyChangeListener(listener);
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        if(pss == null) pss = new PropertyChangeSupport(this);
+        
+        return pss;
     }
-    
-
 }
