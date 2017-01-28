@@ -46,7 +46,6 @@ public class ResourceRole implements Serializable {
         LOG.log(Level.INFO, ">>> create() \"{0}\"", content != null ? content : "NULL");
         if(content == null || (content != null && content.isEmpty())) 
                                 throw new MissingInformationException("No Content");
-        
         try {
             // Is this a valid document ?
             Document document = Document.parse(content);
