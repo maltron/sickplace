@@ -1,0 +1,248 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The web server's http port.
+      openshift.io/generated-by: OpenShiftNewApp
+      service.alpha.openshift.io/dependencies: '[{"name":"usermanagement-data","namespace":"","kind":"Service"}]'
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: usermanagement
+      component: application-server
+    name: usermanagement-app
+  spec:
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      application: usermanagement
+      component: application-server
+      deploymentConfig: usermanagement-app
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: usermanagement
+      component: application-server
+    name: usermanagement-app
+  spec:
+    replicas: 1
+    selector:
+      application: usermanagement
+      component: application-server
+      deploymentConfig: usermanagement-app
+    strategy:
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: wildfly-mongo
+          application: usermanagement
+          component: application-server
+          deploymentConfig: usermanagement-app
+        name: usermanagement-app
+      spec:
+        containers:
+        - env:
+          - name: DB_SERVICE
+            value: usermanagement-data
+          - name: DB_USERNAME
+            value: userx8o
+          - name: DB_PASSWORD
+            value: 7PdQ5wJo
+          - name: DB_DATABASE
+            value: sampledb
+          - name: BROKER_ADDRESS
+            value: tcp://172.30.20.57:61616?jms.rmIdFromConnectionId=true
+          - name: BROKER_USERNAME
+            value: user0Qs
+          - name: BROKER_PASSWORD
+            value: xxReu7gX
+          - name: BROKER_TOPICS
+            value: inform, error
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          name: wildfly-mongo-alpine
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - wildfly-mongo-alpine
+        from:
+          kind: ImageStreamTag
+          name: wildfly-alpine:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      description: Route for application's http service.
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: usermanagement
+      component: application-server
+    name: usermanagement-app
+  spec:
+    host: ""
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: usermanagement-app
+      weight: 100
+  status:
+    ingress: null
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: usermanagement
+      component: database
+    name: usermanagement-data
+  spec:
+    replicas: 1
+    selector:
+      application: usermanagement
+      component: database
+      deploymentConfig: usermanagement-data
+    strategy:
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: wildfly-mongo
+          application: usermanagement
+          component: database
+          deploymentConfig: usermanagement-data
+        name: usermanagement-data
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_USER
+            value: userx8o
+          - name: MONGODB_PASSWORD
+            value: 7PdQ5wJo
+          - name: MONGODB_DATABASE
+            value: sampledb
+          - name: MONGODB_ADMIN_PASSWORD
+            value: hcLQSyYx
+          - name: MONGODB_NOPREALLOC
+          - name: MONGODB_SMALLFILES
+          - name: MONGODB_QUIET
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 27017
+            timeoutSeconds: 1
+          name: mongodb
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 60
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongodb
+        from:
+          kind: ImageStreamTag
+          name: mongodb:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The database server's port.
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: usermanagement
+      component: database
+    name: usermanagement-data
+  spec:
+    ports:
+    - port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      application: usermanagement
+      component: database
+      deploymentConfig: usermanagement-data
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
