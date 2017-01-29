@@ -1,0 +1,2 @@
+If you change environment, you need to adjust Broker's IP, username and password
+Please run the following playbook: ./playbook-update-broker.yaml

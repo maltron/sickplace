@@ -1,4 +1,4 @@
-package net.nortlam.example;
+package net.nortlam.errorcollector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +18,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import net.nortlam.example.entity.Country;
-import net.nortlam.example.error.NoContentException;
+import net.nortlam.errorcollector.entity.Country;
+import net.nortlam.errorcollector.error.NoContentException;
 
 @Path("/v1/country")
 public class Resource {
@@ -55,6 +55,13 @@ public class Resource {
         return Response.ok(found.toJson(queryParameters)).build();
     }
 
+    @GET @Path("/async/{jndi}/{message}")
+    public Response sendAsync(@PathParam("jndi") String jndi, @PathParam("message") String message) {
+        service.sendAsync(jndi, message);
+        
+        return Response.ok().build();
+    }
+    
     /**
      * Used as a means to select which fields needs to be used */
     private Collection<String> queryParameters() {
@@ -64,4 +71,7 @@ public class Resource {
         
         return queryParameters;
     }
+    
+    
+    
 }

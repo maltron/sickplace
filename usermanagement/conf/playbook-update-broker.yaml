@@ -1,0 +1,31 @@
+#!/usr/bin/env ansible-playbook
+--- 
+- name: Update information from Broker into DeploymentConfig
+  hosts: localhost
+  connection: local
+  vars:
+     broker_namespace: activemq
+     broker_service: activemq-amq
+  tasks:
+     - name: Obtaining Broker's IP
+       command: oc get services --namespace {{ broker_namespace }} --output jsonpath='{.items[?(@.metadata.name=="{{ broker_service }}-tcp")].spec.clusterIP}'
+       register: broker_ip
+       tags:
+          - broker
+
+     - name: Objtaining Broker's Username
+       command: oc get deploymentconfig/{{ broker_service }} --namespace {{ broker_namespace }} --output jsonpath='{$..env[?(@.name=="AMQ_USER")].value}'
+       register: broker_username
+       tags:
+          - broker
+
+     - name: Obtaining Broker's Password
+       command: oc get deploymentconfig/{{ broker_service }} --namespace {{ broker_namespace }} --output jsonpath='{$..env[?(@.name=="AMQ_PASSWORD")].value}'
+       register: broker_password
+       tags:
+          - broker
+
+     - name: Update all the environments using the right environment
+       command: oc env deploymentconfig/usermanagement-app BROKER_ADDRESS="tcp://{{ broker_ip.stdout }}:61616?jms.rmIdFromConnectionId=true" BROKER_USERNAME="{{ broker_username.stdout }}" BROKER_PASSWORD="{{ broker_password.stdout }}"
+
+  

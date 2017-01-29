@@ -6,22 +6,22 @@ items:
     annotations:
       description: The web server's http port.
       openshift.io/generated-by: OpenShiftNewApp
-      service.alpha.openshift.io/dependencies: '[{"name":"usermanagement-data","namespace":"","kind":"Service"}]'
+      service.alpha.openshift.io/dependencies: '[{"name":"error-collector-data","namespace":"","kind":"Service"}]'
     creationTimestamp: null
     labels:
       app: wildfly-mongo
-      application: usermanagement
+      application: error-collector
       component: application-server
-    name: usermanagement-app
+    name: error-collector-app
   spec:
     ports:
     - port: 8080
       protocol: TCP
       targetPort: 8080
     selector:
-      application: usermanagement
+      application: error-collector
       component: application-server
-      deploymentConfig: usermanagement-app
+      deploymentConfig: error-collector-app
     sessionAffinity: None
     type: ClusterIP
   status:
@@ -34,15 +34,15 @@ items:
     creationTimestamp: null
     labels:
       app: wildfly-mongo
-      application: usermanagement
+      application: error-collector
       component: application-server
-    name: usermanagement-app
+    name: error-collector-app
   spec:
     replicas: 1
     selector:
-      application: usermanagement
+      application: error-collector
       component: application-server
-      deploymentConfig: usermanagement-app
+      deploymentConfig: error-collector-app
     strategy:
       recreateParams:
         timeoutSeconds: 600
@@ -55,29 +55,27 @@ items:
         creationTimestamp: null
         labels:
           app: wildfly-mongo
-          application: usermanagement
+          application: error-collector
           component: application-server
-          deploymentConfig: usermanagement-app
-        name: usermanagement-app
+          deploymentConfig: error-collector-app
+        name: error-collector-app
       spec:
         containers:
         - env:
           - name: DB_SERVICE
-            value: usermanagement-data
+            value: error-collector-data
           - name: DB_USERNAME
-            value: userx8o
+            value: userBK2
           - name: DB_PASSWORD
-            value: 7PdQ5wJo
+            value: RJbfbAo0
           - name: DB_DATABASE
             value: sampledb
           - name: BROKER_ADDRESS
-            value: tcp://172.30.20.57:61616?jms.rmIdFromConnectionId=true
+            value: tcp://172.30.219.226:61616?jms.rmIdFromConnectionId=true
           - name: BROKER_USERNAME
             value: user0Qs
           - name: BROKER_PASSWORD
             value: xxReu7gX
-          - name: BROKER_TOPICS
-            value: inform
           - name: BROKER_QUEUES
             value: error
           image: ' '
@@ -115,16 +113,16 @@ items:
     creationTimestamp: null
     labels:
       app: wildfly-mongo
-      application: usermanagement
+      application: error-collector
       component: application-server
-    name: usermanagement-app
+    name: error-collector-app
   spec:
     host: ""
     port:
       targetPort: 8080
     to:
       kind: Service
-      name: usermanagement-app
+      name: error-collector-app
       weight: 100
   status:
     ingress: null
@@ -136,15 +134,15 @@ items:
     creationTimestamp: null
     labels:
       app: wildfly-mongo
-      application: usermanagement
+      application: error-collector
       component: database
-    name: usermanagement-data
+    name: error-collector-data
   spec:
     replicas: 1
     selector:
-      application: usermanagement
+      application: error-collector
       component: database
-      deploymentConfig: usermanagement-data
+      deploymentConfig: error-collector-data
     strategy:
       recreateParams:
         timeoutSeconds: 600
@@ -157,21 +155,21 @@ items:
         creationTimestamp: null
         labels:
           app: wildfly-mongo
-          application: usermanagement
+          application: error-collector
           component: database
-          deploymentConfig: usermanagement-data
-        name: usermanagement-data
+          deploymentConfig: error-collector-data
+        name: error-collector-data
       spec:
         containers:
         - env:
           - name: MONGODB_USER
-            value: userx8o
+            value: userBK2
           - name: MONGODB_PASSWORD
-            value: 7PdQ5wJo
+            value: RJbfbAo0
           - name: MONGODB_DATABASE
             value: sampledb
           - name: MONGODB_ADMIN_PASSWORD
-            value: hcLQSyYx
+            value: 1gqKC40n
           - name: MONGODB_NOPREALLOC
           - name: MONGODB_SMALLFILES
           - name: MONGODB_QUIET
@@ -230,18 +228,18 @@ items:
     creationTimestamp: null
     labels:
       app: wildfly-mongo
-      application: usermanagement
+      application: error-collector
       component: database
-    name: usermanagement-data
+    name: error-collector-data
   spec:
     ports:
     - port: 27017
       protocol: TCP
       targetPort: 27017
     selector:
-      application: usermanagement
+      application: error-collector
       component: database
-      deploymentConfig: usermanagement-data
+      deploymentConfig: error-collector-data
     sessionAffinity: None
     type: ClusterIP
   status:

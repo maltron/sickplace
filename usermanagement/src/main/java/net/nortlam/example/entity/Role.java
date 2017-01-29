@@ -65,7 +65,7 @@ public class Role implements Serializable {
     
     @Override
     public String toString() {
-        return toDocument().toString();
+        return toDocument().toJson();
     }
     
     public Document toDocument() {

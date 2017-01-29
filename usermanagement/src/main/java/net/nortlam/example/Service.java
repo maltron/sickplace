@@ -10,27 +10,25 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.ws.rs.NotFoundException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import javax.jms.Topic;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import org.bson.Document;
 
 import net.nortlam.example.entity.Country;
 import net.nortlam.example.entity.Role;
 import net.nortlam.example.entity.User;
 import net.nortlam.example.error.CreateException;
+import net.nortlam.example.error.MissingInformationException;
 import net.nortlam.example.error.NoContentException;
 import net.nortlam.example.setup.MongoProvider;
 
@@ -40,29 +38,55 @@ public class Service {
     private static final Logger LOG = Logger.getLogger(Service.class.getName());
     
     public static final String JMS_FACTORY = "java:/AMQConnectionFactory";
-    @Resource(mappedName=JMS_FACTORY)
+    @Resource(lookup=JMS_FACTORY)
     private ConnectionFactory connectionFactory;
 
     public static final String TOPIC_INFORM = "java:/topic/inform";
-    @Resource(mappedName=TOPIC_INFORM)
+    @Resource(lookup=TOPIC_INFORM)
     private Topic topicInform;    
-
+    
     @EJB
     private MongoProvider provider;
     
+    @EJB
+    private NotificationError error;
+    
     public void create(Role role) throws CreateException {
         try {
+            // Insert a new role 
             getRoles().insertOne(role.toDocument());
+            
+            // Notify of operation
+            notify("CREATE", "role", role.toString());
+            
         } catch(MongoWriteException ex) {
+            error.notify("Creating a new Role into Database", role.toString(), "MongoWriteException", ex.getMessage());
             LOG.log(Level.WARNING, "### MONGO WRITE EXCEPTION:{0}", ex.getMessage());
             throw new CreateException(ex);
         } catch(MongoWriteConcernException ex) {
+            error.notify("Creating a new Role into Database", role.toString(), "MongoWriteConcernException", ex.getMessage());
             LOG.log(Level.WARNING, "### MONGO WRITE CONCERN EXCEPTION:{0}", ex.getMessage());
             throw new CreateException(ex);
         } catch(MongoException ex) {
+            error.notify("Creating a new Role into Database", role.toString(), "MongoException", ex.getMessage());
             LOG.log(Level.WARNING, "### MONGO EXCEPTION:{0}", ex.getMessage());
             throw new CreateException(ex);
         }
+    }
+    
+    public Collection<Role> fetchAllRoles() throws NoContentException {
+        Collection<Role> result = new ArrayList<>();
+        for(Document document: getRoles().find().sort(Sorts.ascending(Role.TAG_NAME))) {
+            try {
+                result.add(new Role(document));
+            } catch(MissingInformationException ex) {
+                // It won't happen
+            }
+        }
+        
+        if(result.isEmpty()) throw new NoContentException();
+        
+        return result;
     }
     
     public Collection<Country> fetchAllCountries(Collection<String> fields) throws NoContentException {
@@ -101,38 +125,22 @@ public class Service {
     private MongoCollection<Document> getRoles() {
         return provider.getDatabase().getCollection(Role.COLLECTION);
     }
-
-    public void sendAsync(String jndi, String message) {
-        LOG.log(Level.INFO, ">>> Destination: {0}  Message: {1}",
-                new Object[] {jndi, message});
-        
-        try(Connection connection = getConnection(); 
+    
+    public void notify(String operation, String entity, String content) {
+        try (Connection connection = connectionFactory.createConnection();
                 Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
-            Context context = new InitialContext();
-            Destination destination = (Destination)context.lookup(jndi);
             
-            MessageProducer producer = session.createProducer(destination);
-            TextMessage textMessage = session.createTextMessage(message);
-            producer.send(textMessage);
+            // Componse a message into a JSON format
+            JsonObjectBuilder builder = Json.createObjectBuilder();
+            builder.add("operation", operation);
+            builder.add("entity", entity);
+            builder.add("content", content);
+            
+            MessageProducer producer = session.createProducer(topicInform);
+            producer.send(session.createTextMessage(builder.build().toString()));
             
         } catch(JMSException ex) {
             LOG.log(Level.SEVERE, "### JMS EXCEPTION:{0}", ex.getMessage());
-        } catch(NamingException ex) {
-            LOG.log(Level.SEVERE, "### NAMING EXCEPTION:{0}", ex.getMessage());
-        } 
-    }
-    
-    private Connection getConnection() throws JMSException {
-        Connection connection = null;
-        try {
-            Context context = new InitialContext();
-            ConnectionFactory factory = (ConnectionFactory)context.lookup(JMS_FACTORY);
-            connection = factory.createConnection(); connection.start();
-            
-        } catch(NamingException ex) {
-            LOG.log(Level.SEVERE, "### NAMING EXCEPTION:{0}", ex.getMessage());
         }
-        
-        return connection;
     }
 }
