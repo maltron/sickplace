@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.nortlam.example</groupId>
-    <artifactId>usermanagement</artifactId>
+    <groupId>net.nortlam.errorcollection</groupId>
+    <artifactId>errorcollection</artifactId>
     <version>2.0</version>
     <packaging>war</packaging>
 
@@ -29,8 +29,7 @@
         </dependency>
     </dependencies>
 
-    <!-- WILDFLY SWARM -->
-<!--    <dependencyManagement>
+    <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.wildfly.swarm</groupId>
@@ -40,7 +39,7 @@
                 <type>pom</type>
             </dependency>
         </dependencies>
-    </dependencyManagement>-->
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -69,7 +68,7 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>1.1.0.Beta1</version>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.wildfly.swarm</groupId>
                 <artifactId>wildfly-swarm-plugin</artifactId>
                 <version>${version.wildfly.swarm}</version>
@@ -80,7 +79,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>            -->
+            </plugin>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -108,5 +107,6 @@
             </plugin>
         </plugins>
     </build>
-    <name>Sickplace: User Management</name>
+    <name>Sickplace: Error Collection</name>
+    <description>This service will collect all the errors coming from other services and make it available to a dashboard for improvement purposes</description>
 </project>

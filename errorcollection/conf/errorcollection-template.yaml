@@ -1,0 +1,248 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The web server's http port.
+      openshift.io/generated-by: OpenShiftNewApp
+      service.alpha.openshift.io/dependencies: '[{"name":"errorcollection-data","namespace":"","kind":"Service"}]'
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: errorcollection
+      component: application-server
+    name: errorcollection-app
+  spec:
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      application: errorcollection
+      component: application-server
+      deploymentConfig: errorcollection-app
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: errorcollection
+      component: application-server
+    name: errorcollection-app
+  spec:
+    replicas: 1
+    selector:
+      application: errorcollection
+      component: application-server
+      deploymentConfig: errorcollection-app
+    strategy:
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: wildfly-mongo
+          application: errorcollection
+          component: application-server
+          deploymentConfig: errorcollection-app
+        name: errorcollection-app
+      spec:
+        containers:
+        - env:
+          - name: DB_SERVICE
+            value: errorcollection-data
+          - name: DB_USERNAME
+            value: userFGB
+          - name: DB_PASSWORD
+            value: oK5CIjHu
+          - name: DB_DATABASE
+            value: sampledb
+          - name: BROKER_ADDRESS
+            value: tcp://172.30.219.226:61616?jms.rmIdFromConnectionId=true
+          - name: BROKER_USERNAME
+            value: user0Qs
+          - name: BROKER_PASSWORD
+            value: xxReu7gX
+          - name: BROKER_QUEUES
+            value: error
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          name: wildfly-mongo-alpine
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - wildfly-mongo-alpine
+        from:
+          kind: ImageStreamTag
+          name: wildfly-alpine:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      description: Route for application's http service.
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: errorcollection
+      component: application-server
+    name: errorcollection-app
+  spec:
+    host: ""
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: errorcollection-app
+      weight: 100
+  status:
+    ingress: null
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: errorcollection
+      component: database
+    name: errorcollection-data
+  spec:
+    replicas: 1
+    selector:
+      application: errorcollection
+      component: database
+      deploymentConfig: errorcollection-data
+    strategy:
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: wildfly-mongo
+          application: errorcollection
+          component: database
+          deploymentConfig: errorcollection-data
+        name: errorcollection-data
+      spec:
+        containers:
+        - env:
+          - name: MONGODB_USER
+            value: userFGB
+          - name: MONGODB_PASSWORD
+            value: oK5CIjHu
+          - name: MONGODB_DATABASE
+            value: sampledb
+          - name: MONGODB_ADMIN_PASSWORD
+            value: lgcWvo81
+          - name: MONGODB_NOPREALLOC
+          - name: MONGODB_SMALLFILES
+          - name: MONGODB_QUIET
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 27017
+            timeoutSeconds: 1
+          name: mongodb
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p $MONGODB_PASSWORD
+                --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 60
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongodb
+        from:
+          kind: ImageStreamTag
+          name: mongodb:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The database server's port.
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: wildfly-mongo
+      application: errorcollection
+      component: database
+    name: errorcollection-data
+  spec:
+    ports:
+    - port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      application: errorcollection
+      component: database
+      deploymentConfig: errorcollection-data
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
